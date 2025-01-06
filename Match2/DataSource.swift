@@ -6,10 +6,12 @@ final class DataSource {
     
     private init() { }
     
-    func getRandom() -> [TileModel] {
-        let uniqueColors: [Color] = [.red, .blue, .green, .yellow, .orange, .purple, .pink, .brown]
+    func getRandom(_ count: Int) -> [TileModel] {
+        let uniqueColors: [Color] = [.red, .blue, .green, .yellow, .orange, .purple, .pink, .brown].shuffled()
         
-        var tileColors = uniqueColors + uniqueColors
+        let resultWithPrefix = uniqueColors.prefix(count)
+        
+        var tileColors = resultWithPrefix + resultWithPrefix
         tileColors.shuffle()
         
         return tileColors.map { TileModel(color: $0) }

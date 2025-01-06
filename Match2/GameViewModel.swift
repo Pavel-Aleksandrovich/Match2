@@ -4,12 +4,13 @@ final class GameViewModel: ObservableObject {
     
     @Published var dataSource: [TileModel] = []
     
-    func onAppear() {
-        dataSource = DataSource.shared.getRandom()
-    }
+    @Published var levelModel: LevelModel? = nil
     
-    func restart() {
-        dataSource = DataSource.shared.getRandom()
+    func onAppear() {
+        if let levelModel {
+            let half = (levelModel.column*levelModel.column)/2
+            dataSource = DataSource.shared.getRandom(half)
+        }
     }
     
     func tileDidTap(_ model: TileModel) {
