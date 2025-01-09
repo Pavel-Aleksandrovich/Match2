@@ -4,33 +4,22 @@ struct ListLevelsView: View {
     
     @StateObject private var viewModel = GameViewModel()
     
-    @State var isGame = false
-    
-    @State var dataSource: [LevelModel] = [
-        LevelModel(column: 2, title: "Beginner"),
-        LevelModel(column: 4, title: "Intermediate"),
-        LevelModel(column: 6, title: "Skilled"),
-        LevelModel(column: 8, title: "Advanced"),
-        LevelModel(column: 10, title: "Master"),
-    ]
-    
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 8) {
-                    ForEach(dataSource.indices, id: \.self) { index in
-                        let model = dataSource[index]
+                    ForEach(viewModel.levelsDataSource.indices, id: \.self) { index in
+                        let model = viewModel.levelsDataSource[index]
                         
                         ListLevelsItemView(index: index, title: model.title)
                             .onTapGesture {
-                                viewModel.levelModel = model
-                                isGame = true
+                                viewModel.levelDidTap(model)
                             }
                     }
                 }
                 .padding(.horizontal, 16)
             }
-            .navigationDestination(isPresented: $isGame) {
+            .navigationDestination(isPresented: $viewModel.isGame) {
                 GameView()
                     .environmentObject(viewModel)
             }

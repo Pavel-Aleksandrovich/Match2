@@ -18,17 +18,45 @@ import SwiftUI
 // Move from first screen to second and back
 // Passed data between to screens using ViewModel
 
+// Lesson 4 blueprint:
+// Update size of tile
+// Update data source
+// Create lives
+// Create Timer
+// Update code
+
 struct GameView: View {
     
     @EnvironmentObject var viewModel: GameViewModel
     
     @State var columns: [GridItem] = []
+    @State var tileWidth: CGFloat = 0
+    
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack {
             Color.gray.opacity(0.1).ignoresSafeArea()
             
             VStack {
+                
+                Text(TimeConverter.formatTime(viewModel.time))
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(.black)
+                
+                HStack {
+                    Text("\(viewModel.lives)/\(viewModel.levelModel?.lives ?? 0)")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundStyle(.black)
+                    
+                    Image(systemName: "heart.fill")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 30)
+                        .foregroundColor(.red)
+                }
+                
                 if let levelModel = viewModel.levelModel {
                     Text("Level: " + levelModel.title)
                         .font(.system(size: 19, weight: .semibold))
@@ -37,9 +65,15 @@ struct GameView: View {
                 
                 LazyVGrid(columns: columns, spacing: 1) {
                     ForEach(viewModel.dataSource) { model in
-                        Rectangle()
-                            .fill(model.isTapped ? model.color : .gray)
-                            .frame(width: 50, height: 50)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(model.isTapped ? .blue : .gray)
+                            .frame(width: tileWidth, height: tileWidth)
+                            .overlay {
+                                Text("\(model.number)")
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .opacity(model.isTapped ? 1 : 0)
+                            }
                             .onTapGesture {
                                 viewModel.tileDidTap(model)
                             }
@@ -51,12 +85,20 @@ struct GameView: View {
             }
          
         }
+        .onReceive(timer) { _ in
+            viewModel.updateTime()
+        }
         .onAppear() {
             if let levelModel = viewModel.levelModel {
-                columns = Array(repeating: GridItem(.fixed(50), spacing: 1), count: levelModel.column)
+                let column = CGFloat(levelModel.column)
+                let screenWidth = UIScreen.main.bounds.width
+                let leftPadding: CGFloat = 16
+                tileWidth = (screenWidth-leftPadding*2-(column-1))/column
+                
+                columns = Array(repeating: GridItem(.fixed(tileWidth), spacing: 1), count: levelModel.column)
             }
             
-            viewModel.onAppear()
+            viewModel.prepareForGame()
         }
     }
     
@@ -73,7 +115,7 @@ private struct RestartView: View {
         
         Button(action: {
             if !isEmpty {
-                viewModel.onAppear()
+                viewModel.prepareForGame()
                 
                 isTapped.toggle()
                 
