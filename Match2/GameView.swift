@@ -25,14 +25,19 @@ import SwiftUI
 // Create Timer
 // Update code
 
+// Lesson 5 blueprint
+// Move timer from View to ViewModel
+// Update restart button logic
+// Create Win and Lose screens
+// Move to next level logic
+// Sound
+
 struct GameView: View {
     
     @EnvironmentObject var viewModel: GameViewModel
     
     @State var columns: [GridItem] = []
     @State var tileWidth: CGFloat = 0
-    
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack {
@@ -75,6 +80,7 @@ struct GameView: View {
                                     .opacity(model.isTapped ? 1 : 0)
                             }
                             .onTapGesture {
+                                SoundManager.play(.click)
                                 viewModel.tileDidTap(model)
                             }
                     }
@@ -85,9 +91,23 @@ struct GameView: View {
             }
          
         }
-        .onReceive(timer) { _ in
+        .onReceive(viewModel.timer) { _ in
             viewModel.updateTime()
         }
+        .sheet(item: $viewModel.gameSheet, content: { screen in
+            switch screen {
+            case .win:
+                WinBottomSheetView()
+                    .environmentObject(viewModel)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.hidden)
+            case .lose:
+                LoseBottomSheetView()
+                    .environmentObject(viewModel)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.hidden)
+            }
+        })
         .onAppear() {
             if let levelModel = viewModel.levelModel {
                 let column = CGFloat(levelModel.column)
@@ -100,6 +120,7 @@ struct GameView: View {
             
             viewModel.prepareForGame()
         }
+        .id(viewModel.gameId)
     }
     
 }
@@ -111,10 +132,12 @@ private struct RestartView: View {
     @State private var isTapped = false
     
     var body: some View {
-        let isEmpty = viewModel.dataSource.filter { $0.isTapped }.isEmpty
+        let isCanRestart = viewModel.time > 0
         
         Button(action: {
-            if !isEmpty {
+            if isCanRestart {
+                SoundManager.play(.click)
+                
                 viewModel.prepareForGame()
                 
                 isTapped.toggle()
@@ -138,7 +161,7 @@ private struct RestartView: View {
         .background(Color.blue)
         .cornerRadius(8)
         .padding(.horizontal)
-        .opacity(isEmpty ? 0.6 : 1)
+        .opacity(isCanRestart ? 1 : 0.6)
     }
     
 }

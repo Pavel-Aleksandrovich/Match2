@@ -1,5 +1,14 @@
 import Foundation
 
+enum GameResultType: Int, Identifiable {
+    case win
+    case lose
+
+    var id: String {
+       return "\(rawValue)"
+    }
+}
+
 final class GameViewModel: ObservableObject {
     
     @Published var dataSource: [TileModel] = []
@@ -18,15 +27,32 @@ final class GameViewModel: ObservableObject {
     @Published var lives = 0
     @Published var time = 0
     
+    @Published var gameSheet: GameResultType? = nil
+    @Published var gameId = UUID()
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     func levelDidTap(_ model: LevelModel) {
         levelModel = model
         isGame = true
+    }
+    
+    func nextLevel() {
+        if let levelModel {
+            let index = levelsDataSource.enumerated().filter { $0.element.id == levelModel.id }.first?.offset ?? levelsDataSource.count-1
+            
+            let isLastLevel = index+1 >= levelsDataSource.count
+            self.levelModel = isLastLevel ? levelsDataSource[0] : levelsDataSource[index+1]
+            
+            gameId = UUID()
+        }
     }
     
     func prepareForGame() {
         if let levelModel {
             time = 0
             lives = levelModel.lives
+            gameSheet = nil
             
             let half = (levelModel.column*levelModel.column)/2
             dataSource = DataSource.shared.getRandom(half)
@@ -34,6 +60,8 @@ final class GameViewModel: ObservableObject {
     }
     
     func updateTime() {
+        guard gameSheet == nil else { return }
+
         time += 1
     }
     
@@ -81,8 +109,12 @@ final class GameViewModel: ObservableObject {
             
             if matchesTiles.count == self.dataSource.count {
                 print("win")
+                SoundManager.play(.win)
+                self.gameSheet = .win
             } else if self.lives == 0 {
                 print("lose")
+                SoundManager.play(.lose)
+                self.gameSheet = .lose
             }
         }
         

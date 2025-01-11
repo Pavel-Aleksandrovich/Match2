@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 struct ListLevelsView: View {
     
     @StateObject private var viewModel = GameViewModel()
@@ -13,6 +14,7 @@ struct ListLevelsView: View {
                         
                         ListLevelsItemView(index: index, title: model.title)
                             .onTapGesture {
+                                SoundManager.play(.click)
                                 viewModel.levelDidTap(model)
                             }
                     }
@@ -25,6 +27,8 @@ struct ListLevelsView: View {
             }
         }
     }
+    
+
     
 }
 

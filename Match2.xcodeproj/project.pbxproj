@@ -11,7 +11,13 @@
 		843A49362D21337100C50D17 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843A49352D21337100C50D17 /* GameView.swift */; };
 		843A49382D21337200C50D17 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 843A49372D21337200C50D17 /* Assets.xcassets */; };
 		843A493B2D21337200C50D17 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 843A493A2D21337200C50D17 /* Preview Assets.xcassets */; };
+		84518BA92D3029BE00DE20FE /* loseSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 84518BA72D3029BE00DE20FE /* loseSound.mp3 */; };
+		84518BAA2D3029BE00DE20FE /* clickSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 84518BA82D3029BE00DE20FE /* clickSound.mp3 */; };
+		84518BAC2D3029C400DE20FE /* winSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 84518BAB2D3029C400DE20FE /* winSound.mp3 */; };
+		84518BAF2D302B9B00DE20FE /* LoseBottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84518BAE2D302B9B00DE20FE /* LoseBottomSheetView.swift */; };
 		84AA4F232D2E6725003397EB /* TimeConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AA4F222D2E6725003397EB /* TimeConverter.swift */; };
+		84BBFC822D32439C006CA48C /* WinBottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BBFC812D32439C006CA48C /* WinBottomSheetView.swift */; };
+		84BBFC842D324ADB006CA48C /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BBFC832D324ADB006CA48C /* SoundManager.swift */; };
 		84FBE6562D2669E100E93C8C /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBE6552D2669E100E93C8C /* GameViewModel.swift */; };
 		84FBE6582D266A4E00E93C8C /* TileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBE6572D266A4E00E93C8C /* TileModel.swift */; };
 		84FBE65A2D266C5A00E93C8C /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBE6592D266C5A00E93C8C /* DataSource.swift */; };
@@ -25,7 +31,13 @@
 		843A49352D21337100C50D17 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		843A49372D21337200C50D17 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		843A493A2D21337200C50D17 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		84518BA72D3029BE00DE20FE /* loseSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = loseSound.mp3; sourceTree = "<group>"; };
+		84518BA82D3029BE00DE20FE /* clickSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = clickSound.mp3; sourceTree = "<group>"; };
+		84518BAB2D3029C400DE20FE /* winSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = winSound.mp3; sourceTree = "<group>"; };
+		84518BAE2D302B9B00DE20FE /* LoseBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoseBottomSheetView.swift; sourceTree = "<group>"; };
 		84AA4F222D2E6725003397EB /* TimeConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeConverter.swift; sourceTree = "<group>"; };
+		84BBFC812D32439C006CA48C /* WinBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinBottomSheetView.swift; sourceTree = "<group>"; };
+		84BBFC832D324ADB006CA48C /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		84FBE6552D2669E100E93C8C /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		84FBE6572D266A4E00E93C8C /* TileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileModel.swift; sourceTree = "<group>"; };
 		84FBE6592D266C5A00E93C8C /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
@@ -63,14 +75,18 @@
 		843A49322D21337100C50D17 /* Match2 */ = {
 			isa = PBXGroup;
 			children = (
+				84518BAD2D3029C900DE20FE /* Sound */,
 				843A49332D21337100C50D17 /* Match2App.swift */,
 				84FBE6612D2BAF5700E93C8C /* ListLevelsView.swift */,
 				843A49352D21337100C50D17 /* GameView.swift */,
+				84518BAE2D302B9B00DE20FE /* LoseBottomSheetView.swift */,
+				84BBFC812D32439C006CA48C /* WinBottomSheetView.swift */,
 				84FBE6552D2669E100E93C8C /* GameViewModel.swift */,
 				84FBE6572D266A4E00E93C8C /* TileModel.swift */,
 				84FBE6632D2BB62200E93C8C /* LevelModel.swift */,
 				84FBE6592D266C5A00E93C8C /* DataSource.swift */,
 				84AA4F222D2E6725003397EB /* TimeConverter.swift */,
+				84BBFC832D324ADB006CA48C /* SoundManager.swift */,
 				843A49372D21337200C50D17 /* Assets.xcassets */,
 				843A49392D21337200C50D17 /* Preview Content */,
 			);
@@ -83,6 +99,16 @@
 				843A493A2D21337200C50D17 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		84518BAD2D3029C900DE20FE /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				84518BA82D3029BE00DE20FE /* clickSound.mp3 */,
+				84518BA72D3029BE00DE20FE /* loseSound.mp3 */,
+				84518BAB2D3029C400DE20FE /* winSound.mp3 */,
+			);
+			path = Sound;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,6 +171,9 @@
 			files = (
 				843A493B2D21337200C50D17 /* Preview Assets.xcassets in Resources */,
 				843A49382D21337200C50D17 /* Assets.xcassets in Resources */,
+				84518BA92D3029BE00DE20FE /* loseSound.mp3 in Resources */,
+				84518BAC2D3029C400DE20FE /* winSound.mp3 in Resources */,
+				84518BAA2D3029BE00DE20FE /* clickSound.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +191,9 @@
 				84FBE6582D266A4E00E93C8C /* TileModel.swift in Sources */,
 				84AA4F232D2E6725003397EB /* TimeConverter.swift in Sources */,
 				843A49362D21337100C50D17 /* GameView.swift in Sources */,
+				84518BAF2D302B9B00DE20FE /* LoseBottomSheetView.swift in Sources */,
+				84BBFC822D32439C006CA48C /* WinBottomSheetView.swift in Sources */,
+				84BBFC842D324ADB006CA48C /* SoundManager.swift in Sources */,
 				843A49342D21337100C50D17 /* Match2App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
