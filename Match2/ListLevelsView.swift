@@ -12,10 +12,10 @@ struct ListLevelsView: View {
                     ForEach(viewModel.levelsDataSource.indices, id: \.self) { index in
                         let model = viewModel.levelsDataSource[index]
                         
-                        ListLevelsItemView(index: index, title: model.title)
+                        ListLevelsItemView(index: index, title: model.title, isCanPlay: model.isCanPlay, isShaking: model.isShaking)
                             .onTapGesture {
                                 SoundManager.play(.click)
-                                viewModel.levelDidTap(model)
+                                viewModel.levelDidTap(model: model, index: index)
                             }
                     }
                 }
@@ -24,6 +24,9 @@ struct ListLevelsView: View {
             .navigationDestination(isPresented: $viewModel.isGame) {
                 GameView()
                     .environmentObject(viewModel)
+            }
+            .onAppear() {
+                viewModel.getAllLevels()
             }
         }
     }
@@ -36,6 +39,8 @@ private struct ListLevelsItemView: View {
     
     let index: Int
     let title: String
+    let isCanPlay: Bool
+    let isShaking: Bool
     
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
@@ -46,6 +51,18 @@ private struct ListLevelsItemView: View {
                     Text("#\(index+1). " + title.uppercased())
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(.white)
+                    
+                    if !isCanPlay {
+                        Image(systemName: "lock.fill")
+                            .resizable()
+                            .renderingMode(.template)
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundStyle(.gray)
+                            .frame(width: 24)
+                            .offset(x: isShaking ? -12 : 0)
+                            .animation(.easeInOut(duration: 0.1).repeatCount(3, autoreverses: true),
+                                       value: isShaking)
+                    }
                     
                     Spacer()
                 }

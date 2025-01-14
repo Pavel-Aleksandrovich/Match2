@@ -32,6 +32,10 @@ import SwiftUI
 // Move to next level logic
 // Sound
 
+// Lesson 6 blueprint
+// Shake animation
+// Save progress using User Defaults
+
 struct GameView: View {
     
     @EnvironmentObject var viewModel: GameViewModel
