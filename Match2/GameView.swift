@@ -36,6 +36,9 @@ import SwiftUI
 // Shake animation
 // Save progress using User Defaults
 
+// Lesson 7 blueprint
+// Update game logic
+
 struct GameView: View {
     
     @EnvironmentObject var viewModel: GameViewModel
@@ -75,14 +78,16 @@ struct GameView: View {
                 LazyVGrid(columns: columns, spacing: 1) {
                     ForEach(viewModel.dataSource) { model in
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(model.isTapped ? .blue : .gray)
+                            .fill(model.scale == 1 && !model.isMatched ? .gray : .blue)
                             .frame(width: tileWidth, height: tileWidth)
                             .overlay {
                                 Text("\(model.number)")
                                     .font(.system(size: 17, weight: .medium))
                                     .foregroundColor(.white)
-                                    .opacity(model.isTapped ? 1 : 0)
+                                    .opacity(model.scale == 1 && !model.isMatched  ? 0 : 1)  
                             }
+                            .scaleEffect(model.scale)
+                            .animation(.spring, value: viewModel.dataSource)
                             .onTapGesture {
                                 SoundManager.play(.click)
                                 viewModel.tileDidTap(model)
@@ -122,7 +127,7 @@ struct GameView: View {
                 columns = Array(repeating: GridItem(.fixed(tileWidth), spacing: 1), count: levelModel.column)
             }
             
-            viewModel.prepareForGame()
+            viewModel.setInitialState()
         }
         .id(viewModel.gameId)
     }
@@ -142,7 +147,7 @@ private struct RestartView: View {
             if isCanRestart {
                 SoundManager.play(.click)
                 
-                viewModel.prepareForGame()
+                viewModel.setInitialState()
                 
                 isTapped.toggle()
                 

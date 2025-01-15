@@ -26,6 +26,9 @@ final class GameViewModel: ObservableObject {
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    private var tappedTiles: [TileModel] = []
+    private var isCanPlay = true
+    
     func decode(_ json: String) -> [LevelModel] {
         do {
             let jsonData = Data(json.utf8)
@@ -36,7 +39,6 @@ final class GameViewModel: ObservableObject {
             
         } catch {
             print("Failed to decode JSON: \(error.localizedDescription)")
-            
             return []
         }
     }
@@ -47,10 +49,8 @@ final class GameViewModel: ObservableObject {
             let jsonString = String(data: jsonData, encoding: .utf8)
             
             return jsonString
-            
         } catch {
             print("Error encoding JSON: \(error.localizedDescription)")
-            
             return nil
         }
     }
@@ -123,7 +123,7 @@ final class GameViewModel: ObservableObject {
         }
     }
     
-    func prepareForGame() {
+    func setInitialState() {
         if let levelModel {
             time = 0
             lives = levelModel.lives
@@ -131,6 +131,28 @@ final class GameViewModel: ObservableObject {
             
             let half = (levelModel.column*levelModel.column)/2
             dataSource = DataSource.shared.getRandom(half)
+            
+            tappedTiles.removeAll()
+            isCanPlay = false
+            
+            dataSource = dataSource.map({ TileModel(number: $0.number, isMatched: true) })
+            
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [ weak self ] _ in
+                guard let self else { return }
+
+                for i in 0..<self.dataSource.count {
+                    dataSource[i].scale = 0.01
+                }
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [ weak self ] _ in
+                guard let self else { return }
+                self.isCanPlay = true
+                for i in 0..<self.dataSource.count {
+                    dataSource[i].scale = 1
+                    dataSource[i].isMatched = false
+                }
+            }
         }
     }
     
@@ -141,59 +163,88 @@ final class GameViewModel: ObservableObject {
     }
     
     func tileDidTap(_ model: TileModel) {
-        guard !model.isMatched,
-              lives > 0
-        else { return }
+        guard !model.isMatched, lives > 0, isCanPlay else { return }
         
-        let tappedTilesCount = dataSource.filter { $0.isTapped && !$0.isMatched }.count
-        
-        if let index = dataSource.firstIndex(where: { $0.id == model.id }) {
-            dataSource[index].isTapped.toggle()
+        func setTappedState(_ model: TileModel) {
+            tappedTiles.append(model)
+            if let index = dataSource.firstIndex(where: { $0.id == model.id }) {
+                dataSource[index].isTapped = true
+                dataSource[index].scale = 0.9
+            }
         }
         
-        if tappedTilesCount != 0 {
-            let tappedTiles = dataSource.filter { $0.isTapped && !$0.isMatched }
-            
-            if tappedTiles[0].number == tappedTiles[1].number {
-                if let index = dataSource.firstIndex(where: { $0.id == tappedTiles[0].id }) {
-                    dataSource[index].isMatched = true
+        func setMatchedState(_ model: TileModel) {
+            if let index = dataSource.firstIndex(where: { $0.id == model.id }) {
+                dataSource[index].isMatched = true
+                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [ weak self ] _ in
+                    self?.dataSource[index].scale = 1.05
                 }
                 
-                if let index = dataSource.firstIndex(where: { $0.id == tappedTiles[1].id }) {
-                    dataSource[index].isMatched = true
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [ weak self ] _ in
+                    self?.dataSource[index].scale = 1
                 }
+            }
+        }
+        
+        func setInititalState(_ model: TileModel, withTimeInterval: CGFloat) {
+            if let index = dataSource.firstIndex(where: { $0.id == model.id }) {
+                dataSource[index].isTapped = false
+                Timer.scheduledTimer(withTimeInterval: withTimeInterval, repeats: false) { [ weak self ] _ in
+                    self?.dataSource[index].scale = 1
+                }
+            }
+        }
+        
+        if tappedTiles.isEmpty {
+            setTappedState(model)
+        } else if tappedTiles.count == 1 {
+            if tappedTiles[0].id == model.id {
+                setInititalState(model, withTimeInterval: 0)
             } else {
-                if let index = dataSource.firstIndex(where: { $0.id == tappedTiles[0].id }) {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.dataSource[index].isTapped = false
-                    }
+                setTappedState(model)
+                
+                if tappedTiles[0].number == tappedTiles[1].number {
+                    // Matched
+                    setMatchedState(tappedTiles[0])
+                    setMatchedState(tappedTiles[1])
+                } else {
+                    // Not matched
+                    setInititalState(tappedTiles[0], withTimeInterval: 0.2)
+                    setInititalState(tappedTiles[1], withTimeInterval: 0.5)
+                    
+                    lives -= 1
                 }
                 
-                if let index = dataSource.firstIndex(where: { $0.id == tappedTiles[1].id }) {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.dataSource[index].isTapped = false
-                    }
+                var gameSheet: GameResultType? = nil
+                
+                let matchesTiles = self.dataSource.filter { $0.isMatched }
+
+                if matchesTiles.count == self.dataSource.count {
+                    print("win")
+                    gameSheet = .win
+                    isCanPlay = false
+                    self.save()
+                } else if self.lives == 0 {
+                    print("lose")
+                    gameSheet = .lose
+                    isCanPlay = false
                 }
                 
-                lives -= 1
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [ weak self ] _ in
+                    guard let self else { return }
+                    
+                    if gameSheet == .win {
+                        SoundManager.play(.win)
+                        self.gameSheet = gameSheet
+                    } else if gameSheet == .lose {
+                        SoundManager.play(.lose)
+                        self.gameSheet = gameSheet
+                    }
+                }
             }
-        }
-        
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-            let matchesTiles = self.dataSource.filter { $0.isMatched }
             
-            if matchesTiles.count == self.dataSource.count {
-                print("win")
-                SoundManager.play(.win)
-                self.gameSheet = .win
-                self.save()
-            } else if self.lives == 0 {
-                print("lose")
-                SoundManager.play(.lose)
-                self.gameSheet = .lose
-            }
+            tappedTiles.removeAll()
         }
-        
     }
     
 }

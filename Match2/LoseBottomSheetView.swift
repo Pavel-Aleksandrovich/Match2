@@ -12,7 +12,7 @@ struct LoseBottomSheetView: View {
 
             Button("Restart") {
                 SoundManager.play(.click)
-                viewModel.prepareForGame()
+                viewModel.setInitialState()
             }
             .buttonStyle(.borderedProminent)
         }
