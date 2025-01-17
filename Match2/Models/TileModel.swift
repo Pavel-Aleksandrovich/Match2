@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 struct TileModel: Identifiable, Equatable {
     let id: UUID = UUID()

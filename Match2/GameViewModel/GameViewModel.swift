@@ -130,7 +130,7 @@ final class GameViewModel: ObservableObject {
             gameSheet = nil
             
             let half = (levelModel.column*levelModel.column)/2
-            dataSource = DataSource.shared.getRandom(half)
+            dataSource = GameDataSource.shared.getRandom(half)
             
             tappedTiles.removeAll()
             isCanPlay = false

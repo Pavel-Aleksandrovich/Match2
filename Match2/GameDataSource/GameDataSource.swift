@@ -1,8 +1,8 @@
 import SwiftUI
 
-final class DataSource {
+final class GameDataSource {
     
-    static let shared = DataSource()
+    static let shared = GameDataSource()
     
     private init() { }
     

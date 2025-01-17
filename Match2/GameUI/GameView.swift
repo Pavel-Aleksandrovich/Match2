@@ -39,6 +39,10 @@ import SwiftUI
 // Lesson 7 blueprint
 // Update game logic
 
+// Lesson 8 blueprint
+// Create folders for files
+// Summary
+
 struct GameView: View {
     
     @EnvironmentObject var viewModel: GameViewModel

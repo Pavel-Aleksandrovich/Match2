@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 struct LevelModel: Identifiable, Codable {
     var id: UUID = UUID()
